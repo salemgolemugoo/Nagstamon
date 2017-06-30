@@ -26,6 +26,7 @@ import subprocess
 import zipfile
 import glob
 import time
+from distutils.spawn import find_executable
 
 CURRENT_DIR = os.getcwd()
 NAGSTAMON_DIR = os.path.normpath('{0}{1}..{1}'.format(CURRENT_DIR, os.sep))
@@ -166,8 +167,15 @@ def macmain():
     # go one directory up and run pyinstaller
     os.chdir('{0}{1}..'.format(CURRENT_DIR, os.sep))
 
+    # find pyinstaller executable
+    pyinstaller_bin = find_executable('pyinstaller')
+
+    if not pyinstaller_bin:
+        print('PyInstaller is not found. Install it with "pip install PyInstaller"')
+        exit
+
     # create one-file .app bundle by pyinstaller
-    subprocess.call(['/sw/bin/pyinstaller',
+    subprocess.call([os.path.abspath(pyinstaller_bin),
                      '--noconfirm',
                      '--add-data=Nagstamon/resources:Nagstamon/resources',
                      '--icon=Nagstamon/resources/nagstamon.icns',
